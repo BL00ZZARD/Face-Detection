@@ -42,32 +42,32 @@ class App extends Component {
     })
   }
 
-  // calculateFaceLocation = (data) => {
-  //   const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
-  //   const image = document.getElementById('inputimage');
-  //   const width = Number(image.width);
-  //   const height = Number(image.height);
-  //   return {
-  //     leftCol: clarifaiFace.left_col * width,
-  //     topRow: clarifaiFace.top_row * height,
-  //     rightCol: width - (clarifaiFace.right_col * width),
-  //     bottomRow: height - (clarifaiFace.bottom_row * height)
-  //   }
-  // }
-
   calculateFaceLocation = (data) => {
-    const clarifaiFace = JSON.parse(data, null, 2).outputs[0].data.regions[0]
-      .region_info.bounding_box;
-    const image = document.getElementById("inputimage");
+    const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
+    const image = document.getElementById('inputimage');
     const width = Number(image.width);
     const height = Number(image.height);
     return {
       leftCol: clarifaiFace.left_col * width,
       topRow: clarifaiFace.top_row * height,
-      rightCol: width - clarifaiFace.right_col * width,
-      bottomRow: height - clarifaiFace.bottom_row * height,
-    };
+      rightCol: width - (clarifaiFace.right_col * width),
+      bottomRow: height - (clarifaiFace.bottom_row * height)
+    }
   }
+
+  // calculateFaceLocation = (data) => {
+  //   const clarifaiFace = JSON.parse(data, null, 2).outputs[0].data.regions[0]
+  //     .region_info.bounding_box;
+  //   const image = document.getElementById("inputimage");
+  //   const width = Number(image.width);
+  //   const height = Number(image.height);
+  //   return {
+  //     leftCol: clarifaiFace.left_col * width,
+  //     topRow: clarifaiFace.top_row * height,
+  //     rightCol: width - clarifaiFace.right_col * width,
+  //     bottomRow: height - clarifaiFace.bottom_row * height,
+  //   };
+  // }
 
   displayFaceBox = (box) => {
     this.setState({ box: box });
@@ -79,17 +79,17 @@ class App extends Component {
 
   onButtonSubmit = () => {
     this.setState({ imageUrl: this.state.input });
-    fetch('http://localhost:8080/imageurl', {
+    fetch("http://localhost:8080/imageurl", {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         input: this.state.input
-      })
+      }),
     })
       .then(response => response.json())
       .then(response => {
         if (response) {
-          fetch('http://localhost:8080/image', {
+          fetch("http://localhost:8080/image", {
             method: 'put',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
