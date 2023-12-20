@@ -43,15 +43,32 @@ class App extends Component {
   }
 
   calculateFaceLocation = (data) => {
-    const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
-    const image = document.getElementById('inputimage');
-    const width = Number(image.width);
-    const height = Number(image.height);
-    return {
-      leftCol: clarifaiFace.left_col * width,
-      topRow: clarifaiFace.top_row * height,
-      rightCol: width - (clarifaiFace.right_col * width),
-      bottomRow: height - (clarifaiFace.bottom_row * height)
+    // Check if the response and its nested properties exist
+    if (data && data.outputs && data.outputs[0] && data.outputs[0].data &&
+      data.outputs[0].data.regions && data.outputs[0].data.regions[0] &&
+      data.outputs[0].data.regions[0].region_info &&
+      data.outputs[0].data.regions[0].region_info.bounding_box) {
+
+      const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
+      const image = document.getElementById('inputimage');
+      const width = Number(image.width);
+      const height = Number(image.height);
+
+      return {
+        leftCol: clarifaiFace.left_col * width,
+        topRow: clarifaiFace.top_row * height,
+        rightCol: width - (clarifaiFace.right_col * width),
+        bottomRow: height - (clarifaiFace.bottom_row * height)
+      };
+    } else {
+      console.error('Invalid response structure from Clarifai API:', data);
+      // Return a default bounding box or handle the error as needed
+      return {
+        leftCol: 0,
+        topRow: 0,
+        rightCol: 0,
+        bottomRow: 0
+      };
     }
   }
 
