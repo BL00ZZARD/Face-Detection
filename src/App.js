@@ -82,6 +82,7 @@ class App extends Component {
 
   onButtonSubmit = () => {
     this.setState({ imageUrl: this.state.input });
+
     fetch("https://face-recognition-server-7s3f.onrender.com/imageurl", {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
@@ -91,7 +92,13 @@ class App extends Component {
     })
       .then(response => response.json())
       .then(response => {
-        if (response) {
+        // Check if the response contains an error
+        if (response.error) {
+          console.error('Clarifai API Error:', response.error);
+          // Handle the error case, e.g., show a message to the user
+          // You may want to update the state or UI accordingly
+        } else {
+          // Proceed with face detection and image update
           fetch("https://face-recognition-server-7s3f.onrender.com/image", {
             method: 'put',
             headers: { 'Content-Type': 'application/json' },
@@ -101,15 +108,19 @@ class App extends Component {
           })
             .then(response => response.json())
             .then(count => {
-              this.setState(Object.assign(this.state.user, { entries: count }))
+              this.setState(Object.assign(this.state.user, { entries: count }));
             })
-            .catch(console.log)
+            .catch(console.log);
 
+          this.displayFaceBox(this.calculateFaceLocation(response));
         }
-        this.displayFaceBox(this.calculateFaceLocation(response))
       })
-      .catch(err => console.log(err));
-  }
+      .catch(err => {
+        console.error('Fetch Error:', err);
+        // Handle fetch error, e.g., show a message to the user
+        // You may want to update the state or UI accordingly
+      });
+  };
 
   onRouteChange = (route) => {
     if (route === 'signout') {
